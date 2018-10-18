@@ -48,6 +48,7 @@ public final class JavaCard extends Task {
     // 2.0)
     private static final char[] LOWER_HEX = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     private String master_jckit_path = null;
+    private String master_output_template = "%n_%a_%h_%j.cap";
     private Vector<JCCap> packages = new Vector<>();
 
     private static String hexAID(byte[] aid) {
@@ -129,6 +130,10 @@ public final class JavaCard extends Task {
 
     public void setJCKit(String msg) {
         master_jckit_path = msg;
+    }
+
+    public void setOutput(String template) {
+        master_output_template = template;
     }
 
     public JCCap createCap() {
@@ -472,7 +477,7 @@ public final class JavaCard extends Task {
 
             // Default output name
             if (output_cap == null) {
-                output_cap = "%n_%a_%h_%j.cap"; // SomeApplet_010203040506_9a037e30_2.2.2.cap
+                output_cap = master_output_template;
             }
         }
 
@@ -842,6 +847,7 @@ public final class JavaCard extends Task {
             name = name.replace("%p", cap.getPackageName()); // package name
             name = name.replace("%a", cap.getPackageAID().toString()); // package AID
             name = name.replace("%j", cap.guessJavaCardVersion()); // JavaCard version
+            name = name.replace("%g", cap.guessGlobalPlatformVersion()); // GlobalPlatform version
 
             return name;
         }
