@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="test" name="ant-javacard tests">
-    <include file="kits.xml"/>
+    <import file="kits.xml"/>
     <!-- Build test applets -->
-    <target name="test" depends="jcpro,test-library-user,test-multiapp,test-no-output,test-sdks,test-stringdef,test-targetsdk,test-oldcross"/>
+    <target name="test" depends="jcpro,test-library-user,test-multiapp,test-no-output,test-sdks,test-stringdef,test-targetsdk,test-oldcross,test-jca"/>
     <!-- Different SDK-s-->
     <target name="test-sdks">
         <javacard>
@@ -12,15 +12,6 @@
             </cap>
             <!-- JC 3.0.1 -->
             <cap jckit="${JC303}" sources="src/testapplets/empty">
-                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
-            </cap>
-            <cap jckit="${JC222}" sources="src/testapplets/empty">
-                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
-            </cap>
-            <cap jckit="${JC212}" sources="src/testapplets/empty" verify="false">
-                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
-            </cap>
-            <cap debug="true" jckit="${JC221}" sources="src/testapplets/empty">
                 <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
             </cap>
             <cap jckit="${JC305}" sources="src/testapplets/empty">
@@ -35,8 +26,8 @@
             <cap jckit="${JC304}" sources="src/testapplets/integer" ints="true">
                 <applet class="testapplets.integer.EmptyInt" aid="0102030405060708"/>
             </cap>
-            <cap jckit="${JC211}" sources="src/testapplets/empty" verify="false">
-                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
+            <cap jckit="${JC310}" sources="src/testapplets/integer" ints="true">
+                <applet class="testapplets.integer.EmptyInt" aid="0102030405060708"/>
             </cap>
         </javacard>
     </target>
@@ -51,13 +42,20 @@
     <!-- Library -->
     <target name="test-library" depends="jcpro">
         <javacard jckit="${JC305}">
-            <cap targetsdk="${JC222}" sources="src/testapplets/library" package="testapplets.library" aid="01020304050607" export="testlib" version="0.1"/>
+            <cap targetsdk="${JC222}" sources="src/testapplets/library" package="testapplets.library" aid="01020304050607" export="testlib" version="0.1" strip="false"/>
         </javacard>
+        <fail message="export file missing">
+            <condition>
+                 <not>
+                   <available file="testlib/testapplets/library/javacard/library.exp"/>
+                 </not>
+             </condition>
+         </fail>
     </target>
     <!-- JC 2.2.2 with 3.0.4 library -->
     <target name="test-library-user" depends="jcpro,test-library">
         <javacard>
-            <cap jckit="${JC222}" sources="src/testapplets/libraryuser">
+            <cap jckit="${JC303}" sources="src/testapplets/libraryuser">
                 <applet class="testapplets.libraryuser.LibraryUser" aid="0102030405060708"/>
                 <import jar="testlib/library.jar"/>
             </cap>
@@ -76,7 +74,7 @@
     <!-- Stringdefs -->
     <target name="test-stringdef" depends="jcpro">
         <javacard>
-            <cap jckit="${JC304}" output="StringDefs.cap" sources="src/testapplets/stringdefs" aid="010203040506">
+            <cap jckit="${JC304}" output="StringDefs.cap" sources="src/testapplets/stringdefs" aid="010230040506">
                 <applet class="testapplets.stringdefs.Empty"/>
             </cap>
         </javacard>
@@ -84,18 +82,33 @@
     <!-- targetsdk -->
     <target name="test-targetsdk" depends="jcpro">
         <javacard>
-            <cap jckit="${JC305}" targetsdk="${JC221}" sources="src/testapplets/empty" aid="010203040506">
-                <applet class="testapplets.empty.Empty"/>
+            <cap jckit="${JC305}" targetsdk="${JC221}" sources="src/testapplets/empty">
+                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
             </cap>
         </javacard>
     </target>
     <!-- javaversion -->
     <target name="test-javaversion" depends="jcpro">
         <javacard>
-            <cap jckit="${JC304}" javaversion="1.6" sources="src/testapplets/empty" aid="010203040506">
-                <applet class="testapplets.empty.Empty"/>
+            <cap jckit="${JC304}" javaversion="1.6" sources="src/testapplets/empty">
+                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
             </cap>
         </javacard>
+    </target>
+    <!-- jca -->
+    <target name="test-jca" depends="jcpro">
+        <javacard>
+            <cap jckit="${JC304}" sources="src/testapplets/empty" jca="foobar.jca">
+                <applet class="testapplets.empty.Empty" aid="0102030405060708"/>
+            </cap>
+        </javacard>
+        <fail message="jca file missing">
+            <condition>
+                 <not>
+                   <available file="foobar.jca"/>
+                 </not>
+             </condition>
+         </fail>
     </target>
     <!-- Cross-compile against old SDK -->
     <target name="test-oldcross" depends="jcpro">

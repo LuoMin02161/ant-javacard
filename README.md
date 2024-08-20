@@ -1,16 +1,20 @@
 # Building JavaCard applet CAP files with Ant
 
-> Easy to use [Ant](https://ant.apache.org/) task for building JavaCard CAP files in a declarative way.
+> Easy to use [Apache Ant](https://ant.apache.org/) task for building JavaCard CAP files in a declarative way.
 
-[![Build status](https://travis-ci.org/martinpaljak/ant-javacard.svg?branch=master)](https://travis-ci.org/martinpaljak/ant-javacard) &nbsp; [![Coverity](https://scan.coverity.com/projects/8418/badge.svg)](https://scan.coverity.com/projects/martinpaljak-ant-javacard) &nbsp; [![Latest release](https://img.shields.io/github/release/martinpaljak/ant-javacard.svg)](https://github.com/martinpaljak/ant-javacard/releases/latest) &nbsp; [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.martinpaljak/ant-javacard/badge.svg)](https://mvnrepository.com/artifact/com.github.martinpaljak/ant-javacard) &nbsp; [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/martinpaljak/ant-javacard/blob/master/LICENSE)
+Have a consistent and concise build declaration for JavaCard applets, no matter which JavaCard SDK version you use or target.
+
+[![Build Status](https://github.com/martinpaljak/ant-javacard/workflows/Robot%20builder/badge.svg)](https://github.com/martinpaljak/ant-javacard/actions) [![Latest release](https://img.shields.io/github/release/martinpaljak/ant-javacard.svg)](https://github.com/martinpaljak/ant-javacard/releases/latest) [![Maven version](https://img.shields.io/maven-metadata/v?label=javacard.pro%20maven%20version&metadataUrl=https%3A%2F%2Fjavacard.pro%2Fmaven%2Fcom%2Fgithub%2Fmartinpaljak%2Fant-javacard%2Fmaven-metadata.xml)](https://gist.github.com/martinpaljak/c77d11d671260e24eef6c39123345cae) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/martinpaljak/ant-javacard/blob/master/LICENSE)
 
 ## Features
  * **[Do What I Mean](http://en.wikipedia.org/wiki/DWIM)**. You will [love it](#happy-users)!
- * **No dependencies**, no extra or unrelated downloads. Just **a 46KB jar**.
- * Supports **all available JavaCard SDK versions**: 2.1.2, 2.2.1, 2.2.2, 3.0.3, 3.0.4 and 3.0.5
-   * Get one from [oracle.com](http://www.oracle.com/technetwork/java/embedded/javacard/downloads/javacard-sdk-2043229.html) or use the [handy Github repository](https://github.com/martinpaljak/oracle_javacard_sdks)
- * **Works on all platforms** with Java 1.8: Windows, OSX, Linux.
+ * **No dependencies**, no extra or unrelated downloads. Just **a ~50KB reproducible jar file**.
+ * Supports **all available JavaCard SDK versions**: 2.1.2, 2.2.1, 2.2.2, 3.0.3, 3.0.4, 3.0.5, 3.1.0 and 3.2.0
+   * Get one from [oracle.com](https://www.oracle.com/java/technologies/javacard-sdk-downloads.html) or use the [handy Github repository](https://github.com/martinpaljak/oracle_javacard_sdks)
+ * **Works on all platforms** with LTS Java 1.8+: Windows, OSX, Linux.
+   * **[Usable SDK-s depend on JDK version](https://github.com/martinpaljak/ant-javacard/wiki/JavaCard-SDK-and-JDK-version-compatibility)**
  * Almost **everything integrates** or works with Ant.
+   * Trigger it [from Maven](https://github.com/martinpaljak/ant-javacard/wiki/How-to-use-from-Maven) or via [Gradle wrapper](https://github.com/bertrandmartel/javacard-gradle-plugin)
  * Can be easily integrated into **continuous integration** workflows.
  * Generates CAP files from **sources** or **pre-compiled** class files.
  * Import **external libraries**: natural use of `.jar` libraries and/or `.exp` files.
@@ -18,13 +22,12 @@
  * Loading JavaCard applets is equally pleasing with **[GlobalPlatformPro](https://github.com/martinpaljak/GlobalPlatformPro)**
 
 ## Download & Use
- * Download [`ant-javacard.jar`](https://github.com/martinpaljak/ant-javacard/releases/download/18.09.18/ant-javacard.jar) (be sure to get the [latest version](https://github.com/martinpaljak/ant-javacard/releases/latest))
-   * Java version usable with all SDK-s is 1.8! Use SDK 3.0.5u3 and `targetsdk` to compile with Java 10 for older versions.
+ * Download [`ant-javacard.jar`](https://github.com/martinpaljak/ant-javacard/releases/latest/download/ant-javacard.jar)
  * Or use the download task:
 ```xml
-<get src="https://github.com/martinpaljak/ant-javacard/releases/download/18.09.25/ant-javacard.jar" dest="." skipexisting="true"/>
+<get src="https://github.com/martinpaljak/ant-javacard/releases/latest/download/ant-javacard.jar" dest="." skipexisting="true"/>
 ```
- * Then add the following to your `build.xml` file:
+ * Then load the task with the following in your `build.xml` file:
 ```xml
 <taskdef name="javacard" classname="pro.javacard.ant.JavaCard" classpath="ant-javacard.jar"/>
 ```
@@ -55,6 +58,17 @@ target:
  [javacard] NB! Please use JavaCard SDK 3.0.5u3 or later for verifying!
       [cap] CAP saved to /Users/martin/projects/ant-javacard/Empty_A000000617008E5CDAAE_50da91a4_2.2.2.cap
 ```
+## Recommended setup
+- Targeting JC 3.0.4 or later (modern JavaCard-s)
+  - Use JDK 17 (don't forget to set `$JAVA_HOME`)
+  - Use JavaCard SDK 3.2.0 (`jckit="sdks/jc320v24.0_kit"`) with right target (`targetsdk="3.x.y"`)
+  - NOTE: depending on your external components, absence of v2.3 export files will force you to stick with JavaCard SDK 3.1
+- Targeting JC 2.x.y or 3.0.1 (legacy JavaCard-s)
+  - Use JDK 8 (don't forget to set `$JAVA_HOME`)
+  - Use JavaCard SDK 3.0.5u4 (`jckit="sdks/jc305u4_kit"`) with right target (`targetsdk="sdks/jc222_kit"`)
+
+> Note: ant-javacard will continue to support JavaCard 2 for as long as this is achievable with sane effort
+
 ## Syntax
 Sample:
 
@@ -71,22 +85,24 @@ Details:
    * `jckit` attribute - path to the JavaCard SDK that is used if individual `cap` does not specify one. Optional if `cap` defines one, required otherwise.
  * `cap` tag - construct a CAP file
    * `jckit` attribute - path to the JavaCard SDK to be used. Optional if `javacard` defines one, required otherwise.
-   * `targetsdk` attribute - path to the target JavaCard SDK to be used for this CAP. Optional, value of `jckit` used by default. Allows to use a more recent converter to target older JavaCard platforms.
-   * `sources` attribute - path to Java source code, to be compiled against the JavaCard SDK. Either `sources` or `classes` is required, unless `src/main/javacard` exists.
-   * `sources2` attribute - additional sources to build per-platform applets. Optional.
+   * `targetsdk` attribute - path to the target JavaCard SDK (or `"3.0.X"` target version when using JavaCard SDK v3.1), to be used for this CAP. Optional, value of `jckit` used by default. Allows to use a more recent converter to target older JavaCard platforms.
+   * `sources` attribute - path(s) to Java source code, to be compiled against the JavaCard SDK. Either `sources` or `classes` is required, unless `src/main/javacard` or `src/main/java` exists.
+   * `sources2` attribute - additional sources to build per-platform applets. Optional, deprecated (use multiple paths for `sources`)
    * `classes` attribute - path to pre-compiled class files to be assembled into a CAP file. If both `classes` and `sources` are specified, compiled class files will be put to `classes` folder, which is created if missing.
+   * `includes` attribute - comma or space separated list of patterns of files that must be included (like `**/SomeFile.java`).
+   * `excludes` attribute - comma or space separated list of patterns of files that must be excluded.
    * `package` attribute - name of the package of the CAP file. Optional for applets - set to the parent package of the applet class if left unspecified, required for libraries
-   * `version` attribute - version of the package. Optional - defaults to 0.1 if left unspecified.
-   * `fidesmoappid` attribute - [Fidesmo](https://developer.fidesmo.com) appId, to create the package AID and applet AID-s automatically. Optional.
+   * `version` attribute - version of the package. Optional - defaults to 0.0 if left unspecified.
    * `aid` attribute - AID (hex) of the package. Recommended - or set to the 5 first bytes of the applet AID if left unspecified.
    * `output` attribute - path where to save the generated CAP file. Optional, see below for variables.
    * `export` attribtue - path (folder) where to place the JAR and generated EXP file. Optional.
+   * `exportmap` attribtue - if set to true, use pre-defined export file. Optional.
    * `jar` attribute - path where to save the generated archive JAR file. Optional.
    * `jca` attribute - path where to save the generated JavaCard Assembly (JCA) file. Optional.
    * `verify` attribute - if set to false, disables verification of the resulting CAP file with offcardeverifier. Optional.
    * `debug` attribute - if set to true, generates debug CAP components. Optional.
+   * `strip` attribute - if set to true, removes class files from target CAP. Optional.
    * `ints` attribute - if set to true, enables support for 32 bit `int` type. Optional.
-   * `javaversion` attribute - override the Java source and target version. Optional.
  * `applet` tag - for creating an applet inside the CAP
    * `class` attribute - class of the Applet where install() method is defined. Required.
    * `aid` attribute - AID (hex) of the applet. Recommended - or set to package `aid`+`i` where `i` is index of the applet definition in the build.xml instruction
@@ -96,14 +112,48 @@ Details:
 
 Notes:
  * `jc.home` property has the highest precedence, followed by `jckit` path of `cap`, followed by path in `javacard`, followed by `JC_HOME` environment variable. SDK must be valid to be considered for use.
+ * All source files are expected to be UTF-8. It is a sane choice, please use it.
 
 ### Output file name variables
- * `%h` - 8 character prefix of the SHA-256 Load File Data Block hash of the CAP file
- * `%H` - SHA-256 Load File Data Block hash of the CAP file
- * `%n` - _common name_ of the entity, either applet class or package
+
+The default file name template is `%n_%a_%h_%j_%J.cap` which results in a file name similar to `SomeApplet_010203040506_9a037e30_2.2.2_jdk11.cap`.
+
+Following substitutions are available:
+ * `%h` - 8 character prefix (hex) of the SHA-256 Load File Data Block hash of the CAP file
+ * `%H` - SHA-256 Load File Data Block hash (hex) of the CAP file
+ * `%n` - _common name_ of the entity, either applet class (if only one applet) or package name
  * `%p` - package name
- * `%a` - package AID
- * `%j` - targeted JavaCard version
+ * `%a` - package AID (hex)
+ * `%j` - targeted JavaCard version (ex: 3.0.5)
+ * `%J` - used JDK version (ex: jdk11)
+
+### Command line utility
+`ant-javacard.jar` can be used to dump built .cap file metadata and to re-run off-card verifier.
+
+- dump .cap file metadata
+  - `java -jar ant-javacard.jar <capfile>`
+- run off-card verifier
+  - `java -jar ant-javacard.jar <sdk> [<targetsdk>] <capfile> <expfiles>`
+
+### Environment variables
+- `JAVA_HOME` - path to the JDK to be used.
+- `JC_HOME` - path to the JavaCard SDK to be used if not specified in the build file.
+- `ANT_JAVACARD_TMP` - path to the temporary folder to be used for building CAP files. This is not cleaned after use.
+- `ANT_JAVACARD_DEBUG` - if set, shows debug output.
+
+## Maven dependency
+Releases are published to [`https://mvn.javacard.pro/maven/`](https://mvn.javacard.pro/maven/). To use it, add this to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>javacard-pro</id>
+        <url>https://mvn.javacard.pro/maven/</url>
+    </repository>
+</repositories>
+```
+
+Pushes to Maven Central happen manually and only for selected final versions.
 
 ## License
  * [MIT](./LICENSE)
@@ -122,6 +172,10 @@ A random list of users, with a public link:
   * [HTOP NDEF](https://github.com/petrs/hotp_via_ndef) by [@petrs](https://github.com/petrs)
   * [Yubikey OTP](https://github.com/arekinath/YkOtpApplet) by [@arekinath](https://github.com/arekinath)
   * [SmartPGP](https://github.com/ANSSI-FR/SmartPGP) by [@ANSSI-FR](https://github.com/ANSSI-FR)
+  * [SatochipApplet](https://github.com/Toporin/SatochipApplet) (Bitcoin Hardware Wallet) by [@Toporin](https://github.com/Toporin)
+  * [SIMple-ID](https://github.com/alan-turing-institute/SIMple-ID) by [@alan-turing-institute](https://github.com/alan-turing-institute)
+  * [HelloSTK2](https://github.com/mrlnc/HelloSTK2) (SIM toolkit sample app) by [@mrlnc](https://github.com/mrlnc)
+  * [NeoPGP](https://github.com/mwalle/NeoPGP) by [@mwalle](https://github.com/mwalle)
   * Plus loads of academic projects, classes and papers.
 * Integration projects:
   * [JavaCard Gradle plugin](https://github.com/bertrandmartel/javacard-gradle-plugin) by [@bertrandmartel](https://github.com/bertrandmartel)
@@ -131,6 +185,7 @@ A random list of users, with a public link:
 
 ## Contact
  * See [javacard.pro](https://javacard.pro)
+ * [GlobalPlatform/JavaCard discussions](https://github.com/martinpaljak/GlobalPlatformPro/discussions)
 
 ## Similar projects
  * standard JavaCard SDK Ant tasks
@@ -141,7 +196,7 @@ A random list of users, with a public link:
    * :) Wraps ant-javacard for use with Gradle
  * gradle-javacard (Apache 2.0) - https://github.com/fidesmo/gradle-javacard
    * :) nice declarative interface
-   * :( requires gradle (40M download) 
+   * :( requires gradle (40M download)
    * :( JavaCard 2.2.2 only
  * EclipseJCDE (Eclipse 1.0) - http://eclipse-jcde.sourceforge.net/
    * :( JavaCard 2.2.2 only
